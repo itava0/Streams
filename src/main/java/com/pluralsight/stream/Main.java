@@ -1,8 +1,7 @@
 package com.pluralsight.stream;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
@@ -28,6 +27,20 @@ public class Main {
                 System.out.println(p);
             }
         }
+
+        //Stream API
+
+        var result = personList
+                .stream()
+                .filter(person -> person.lastName.contains(name) || person.firstName.contains(name))
+                .toList();
+
+        System.out.println(result.get(0));
+
+
+        //personList.stream().filter(person -> person.lastName.contains(name)).forEach(System.out::println);
+
+
         //Find the average age
         double totalAge = 0;
 
@@ -38,6 +51,17 @@ public class Main {
         double averageAge = totalAge / personList.size();
 
         System.out.println("Average Age: " + averageAge);
+
+
+        //Stream API
+        OptionalDouble sum = personList.stream()
+                .mapToDouble(person -> person.age)
+                .reduce((age1, age2) -> age1 + age2);
+
+        Optional<Double> average = Optional.of(sum.getAsDouble() / personList.size());
+
+        System.out.println("Average age using Stream: " + average.get());
+
 
 
         //Find the oldest person
@@ -52,6 +76,21 @@ public class Main {
         // Display the oldest person
         System.out.println("Oldest Person: " + oldestPerson.firstName + " " + oldestPerson.lastName + ", Age: " + oldestPerson.age);
 
+        //Stream API
+
+        Person oldestPerson1 = personList.stream()
+                .reduce((person1, person2) -> person1.age > person2.age ? person1 : person2)
+                .orElse(null);
+
+        if (oldestPerson1 != null) {
+            System.out.println("Oldest Person using Stream: " + oldestPerson1.age);
+        } else {
+            System.out.println("No persons in the list.");
+        }
+
+
+
+
         // Find the youngest person
         Person youngestPerson = personList.get(0);
 
@@ -62,6 +101,21 @@ public class Main {
         }
 
         // Display the youngest person
-        System.out.println("Youngest Person: " + youngestPerson.firstName + " " + youngestPerson.lastName + ", Age: " + youngestPerson.age);
+        System.out.println("Youngest Person: " +
+                youngestPerson.firstName + " " +
+                youngestPerson.lastName +
+                ", Age: " + youngestPerson.age);
+
+        //Stream API
+
+        Optional<Person> youngestPerson1 = personList.stream()
+                .reduce((person1, person2) -> person1.age < person2.age ? person1 : person2);
+
+        // Display the youngest person
+        youngestPerson1.ifPresent(person ->
+                System.out.println("Youngest Person: " +
+                        person.firstName + " " +
+                        person.lastName +
+                        ", Age: " + person.age));
     }
 }
